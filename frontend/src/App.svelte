@@ -1,50 +1,67 @@
 <script>
   import GameCard from './lib/GameCard.svelte';
+  import SnakePage from './lib/SnakePage.svelte';
 
-  const placeholderGames = [
+  /** @type {string | null} */
+  let currentView = $state(null);
+
+  const games = [
     {
-      title: 'Game One',
-      description: 'A fast-paced arcade experience built with Rust and WebAssembly.',
+      id: 'snake',
+      title: 'Snake',
+      description: 'The classic snake game. Eat food, grow longer, don\'t hit the walls.',
+      thumbnail: '/thumbnails/snake.png',
     },
     {
-      title: 'Game Two',
+      id: null,
+      title: 'Coming Soon',
       description: 'A puzzle game with challenging levels powered by native-speed Rust logic.',
     },
     {
-      title: 'Game Three',
+      id: null,
+      title: 'Coming Soon',
       description: 'An action platformer running at full speed in your browser via WASM.',
     },
   ];
 </script>
 
-<div class="page">
-  <!-- Hero -->
-  <header class="hero">
-    <h1>RUSTARCADE</h1>
-    <p class="tagline">Play Rust-powered games right in your browser.</p>
-    <div class="divider"></div>
-  </header>
+{#if currentView === 'snake'}
+  <SnakePage onback={() => currentView = null} />
+{:else}
+  <div class="page">
+    <!-- Hero -->
+    <header class="hero">
+      <h1>RUSTARCADE</h1>
+      <p class="tagline">Play Rust-powered games right in your browser.</p>
+      <div class="divider"></div>
+    </header>
 
-  <!-- About -->
-  <section class="about">
-    <h2>What is Rustarcade?</h2>
-    <p>
-      Rustarcade is a collection of games written in <span class="highlight">Rust</span> and
-      compiled to <span class="highlight">WebAssembly</span>, so they run at near-native speed
-      without any plugins or installs — just open the page and play.
-    </p>
-  </section>
+    <!-- About -->
+    <section class="about">
+      <h2>What is Rustarcade?</h2>
+      <p>
+        Rustarcade is a collection of games written in <span class="highlight">Rust</span> and
+        compiled to <span class="highlight">WebAssembly</span>, so they run at near-native speed
+        without any plugins or installs — just open the page and play.
+      </p>
+    </section>
 
-  <!-- Games -->
-  <section class="games">
-    <h2>Games</h2>
-    <div class="grid">
-      {#each placeholderGames as game}
-        <GameCard title={game.title} description={game.description} />
-      {/each}
-    </div>
-  </section>
-</div>
+    <!-- Games -->
+    <section class="games">
+      <h2>Games</h2>
+      <div class="grid">
+        {#each games as game}
+          <GameCard
+            title={game.title}
+            description={game.description}
+            thumbnail={game.thumbnail ?? null}
+            onclick={game.id ? () => currentView = game.id : null}
+          />
+        {/each}
+      </div>
+    </section>
+  </div>
+{/if}
 
 <style>
   .page {
