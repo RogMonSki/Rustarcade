@@ -1,6 +1,7 @@
 <script>
   import GameCard from './lib/GameCard.svelte';
   import SnakePage from './lib/SnakePage.svelte';
+  import TetrisPage from './lib/TetrisPage.svelte';
 
   /** @type {string | null} */
   let currentView = $state(null);
@@ -13,9 +14,10 @@
       thumbnail: '/thumbnails/snake.png',
     },
     {
-      id: null,
-      title: 'Coming Soon',
-      description: 'A puzzle game with challenging levels powered by native-speed Rust logic.',
+      id: 'tetris',
+      title: 'Tetris',
+      description: 'The classic block-stacking puzzle. Clear lines, chase the high score.',
+      thumbnail: '/thumbnails/tetris.png',
     },
     {
       id: null,
@@ -27,6 +29,8 @@
 
 {#if currentView === 'snake'}
   <SnakePage onback={() => currentView = null} />
+{:else if currentView === 'tetris'}
+  <TetrisPage onback={() => currentView = null} />
 {:else}
   <div class="page">
     <!-- Hero -->

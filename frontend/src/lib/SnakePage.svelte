@@ -103,7 +103,9 @@
 
     async function init() {
       const mod = await import('game-core');
-      await mod.default();
+      // Some wasm-bindgen versions emit a self-initializing "bundler"
+      // module with no default init export; only call it if present.
+      if (typeof mod.default === 'function') await mod.default();
 
       if (cleanedUp) return;
 
