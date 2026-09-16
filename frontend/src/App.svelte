@@ -12,19 +12,19 @@
       id: 'snake',
       title: 'Snake',
       description: 'The classic snake game. Eat food, grow longer, don\'t hit the walls.',
-      thumbnail: '/thumbnails/snake.png',
+      thumbnail: `${import.meta.env.BASE_URL}thumbnails/snake.png`,
     },
     {
       id: 'tetris',
       title: 'Tetris',
       description: 'The classic block-stacking puzzle. Clear lines, chase the high score.',
-      thumbnail: '/thumbnails/tetris.png',
+      thumbnail: `${import.meta.env.BASE_URL}thumbnails/tetris.png`,
     },
     {
       id: 'runner',
       title: 'Runner',
       description: 'Endless side-scroller. Jump the cacti, duck the birds, keep running.',
-      thumbnail: '/thumbnails/runner.png',
+      thumbnail: `${import.meta.env.BASE_URL}thumbnails/runner.png`,
     },
   ];
 
