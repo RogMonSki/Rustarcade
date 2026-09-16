@@ -16,7 +16,7 @@ A small arcade of classic games, with all game logic written in Rust and compile
 - `game-core/`: Rust crate compiled to WASM, containing the actual game logic
 
 Each game lives entirely as a Rust struct in `game-core/src/<game>.rs`, exposed to JS via
-`wasm-bindgen`. The frontend never implements game rules itself — it only calls into the compiled
+`wasm-bindgen`. The frontend never implements game rules itself, it only calls into the compiled
 WASM module and renders the state it returns.
 
 ## Getting Started
