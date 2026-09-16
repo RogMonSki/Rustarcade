@@ -2,6 +2,7 @@
   import GameCard from './lib/GameCard.svelte';
   import SnakePage from './lib/SnakePage.svelte';
   import TetrisPage from './lib/TetrisPage.svelte';
+  import RunnerPage from './lib/RunnerPage.svelte';
 
   /** @type {string | null} */
   let currentView = $state(null);
@@ -20,9 +21,10 @@
       thumbnail: '/thumbnails/tetris.png',
     },
     {
-      id: null,
-      title: 'Coming Soon',
-      description: 'An action platformer running at full speed in your browser via WASM.',
+      id: 'runner',
+      title: 'Runner',
+      description: 'Endless side-scroller. Jump the cacti, duck the birds, keep running.',
+      thumbnail: '/thumbnails/runner.png',
     },
   ];
 </script>
@@ -31,6 +33,8 @@
   <SnakePage onback={() => currentView = null} />
 {:else if currentView === 'tetris'}
   <TetrisPage onback={() => currentView = null} />
+{:else if currentView === 'runner'}
+  <RunnerPage onback={() => currentView = null} />
 {:else}
   <div class="page">
     <!-- Hero -->
@@ -46,7 +50,7 @@
       <p>
         Rustarcade is a collection of games written in <span class="highlight">Rust</span> and
         compiled to <span class="highlight">WebAssembly</span>, so they run at near-native speed
-        without any plugins or installs — just open the page and play.
+        without any plugins or installs. Just open the page and play.
       </p>
     </section>
 
