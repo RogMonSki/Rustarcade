@@ -27,6 +27,11 @@
       thumbnail: '/thumbnails/runner.png',
     },
   ];
+
+  $effect(() => {
+    const game = games.find((g) => g.id === currentView);
+    document.title = game ? game.title : 'Rustarcade';
+  });
 </script>
 
 {#if currentView === 'snake'}
