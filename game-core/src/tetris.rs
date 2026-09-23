@@ -97,7 +97,7 @@ impl TetrisGame {
             grid: vec![0u8; COLS * ROWS],
             piece: Piece::spawn(0),
             bag: VecDeque::new(),
-            rng: 98765432101,
+            rng: js_sys::Date::now() as u64 | 1,
             score: 0,
             lines: 0,
             level: 1,
