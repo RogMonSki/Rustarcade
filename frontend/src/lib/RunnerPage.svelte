@@ -5,6 +5,8 @@
 
   const WORLD_W = 640;
   const WORLD_H = 200;
+  const STEP_MS = 1000 / 60; // fixed logical frame duration; game-core physics assumes one step == one 60fps frame
+  const MAX_STEPS_PER_FRAME = 5; // cap catch-up work after e.g. a backgrounded tab
 
   /** @type {HTMLCanvasElement | null} */
   let canvas = $state(null);
@@ -164,18 +166,30 @@
 
   function startLoop(game, ctx) {
     let frameCount = 0;
-    function frame() {
-      frameCount++;
-      if (!waiting) {
-        const alive = game.step();
-        score = game.score();
-        if (!alive) {
-          isOver = true;
-          render(ctx, game, frameCount);
-          return;
+    let accumulator = 0;
+    let lastTime = null;
+
+    function frame(timestamp) {
+      if (lastTime === null) lastTime = timestamp;
+      accumulator = Math.min(accumulator + (timestamp - lastTime), STEP_MS * MAX_STEPS_PER_FRAME);
+      lastTime = timestamp;
+
+      let alive = true;
+      while (accumulator >= STEP_MS) {
+        accumulator -= STEP_MS;
+        frameCount++;
+        if (!waiting) {
+          alive = game.step();
+          score = game.score();
+          if (!alive) {
+            isOver = true;
+            break;
+          }
         }
       }
+
       render(ctx, game, frameCount);
+      if (!alive) return;
       rafRef.current = requestAnimationFrame(frame);
     }
     rafRef.current = requestAnimationFrame(frame);

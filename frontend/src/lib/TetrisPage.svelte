@@ -8,9 +8,11 @@
   const CELL = 24;
   const NEXT_CELL = 18;
 
-  // Auto-repeat timing for held movement keys, in frames (~60fps).
+  // Auto-repeat timing for held movement keys, in logical frames (60/sec).
   const DAS_FRAMES = 10; // delay before repeat kicks in
   const REPEAT_FRAMES = 3; // frames between repeats once held
+  const STEP_MS = 1000 / 60; // fixed logical frame duration; game-core's gravity_frames() assumes 60fps steps
+  const MAX_STEPS_PER_FRAME = 5; // cap catch-up work after e.g. a backgrounded tab
 
   /** @type {HTMLCanvasElement | null} */
   let canvas = $state(null);
@@ -139,41 +141,51 @@
 
   function startLoop(game, ctx, nextCtx) {
     let frameCount = 0;
-    function frame() {
-      frameCount++;
+    let accumulator = 0;
+    let lastTime = null;
 
-      if (!waiting) {
-        // Gravity, paced by the level-dependent interval Rust computes.
-        if (frameCount % game.gravity_frames() === 0) {
-          const alive = game.step();
-          score = game.score();
-          lines = game.lines();
-          level = game.level();
-          if (!alive) {
-            isOver = true;
-            render(ctx, game.cells());
-            renderNext(nextCtx, game.next_cells());
-            return;
-          }
-        }
+    function frame(timestamp) {
+      if (lastTime === null) lastTime = timestamp;
+      accumulator = Math.min(accumulator + (timestamp - lastTime), STEP_MS * MAX_STEPS_PER_FRAME);
+      lastTime = timestamp;
 
-        // Auto-repeat for held movement keys (DAS).
-        const code = activeRepeatKey.current;
-        if (code !== null) {
-          dasCounter.current++;
-          if (
-            dasCounter.current === DAS_FRAMES ||
-            (dasCounter.current > DAS_FRAMES &&
-              (dasCounter.current - DAS_FRAMES) % REPEAT_FRAMES === 0)
-          ) {
-            applyMove(game, code);
+      let alive = true;
+      while (accumulator >= STEP_MS) {
+        accumulator -= STEP_MS;
+        frameCount++;
+
+        if (!waiting) {
+          // Gravity, paced by the level-dependent interval Rust computes.
+          if (frameCount % game.gravity_frames() === 0) {
+            alive = game.step();
             score = game.score();
+            lines = game.lines();
+            level = game.level();
+            if (!alive) {
+              isOver = true;
+              break;
+            }
+          }
+
+          // Auto-repeat for held movement keys (DAS).
+          const code = activeRepeatKey.current;
+          if (code !== null) {
+            dasCounter.current++;
+            if (
+              dasCounter.current === DAS_FRAMES ||
+              (dasCounter.current > DAS_FRAMES &&
+                (dasCounter.current - DAS_FRAMES) % REPEAT_FRAMES === 0)
+            ) {
+              applyMove(game, code);
+              score = game.score();
+            }
           }
         }
       }
 
       render(ctx, game.cells());
       renderNext(nextCtx, game.next_cells());
+      if (!alive) return;
       rafRef.current = requestAnimationFrame(frame);
     }
     rafRef.current = requestAnimationFrame(frame);
